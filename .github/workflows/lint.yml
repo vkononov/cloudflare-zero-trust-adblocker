@@ -1,0 +1,30 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Ruby environment with the latest Ruby version
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+
+      # Install dependencies using Bundler
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      # Run RuboCop to lint the codebase
+      - name: Run RuboCop
+        run: |
+          bundle exec rubocop --display-cop-names --format simple

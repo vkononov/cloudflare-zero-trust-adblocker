@@ -1,0 +1,17 @@
+require:
+  - rubocop-md
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - .git/**/*
+
+Layout/LineLength:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never

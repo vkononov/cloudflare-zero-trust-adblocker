@@ -1,0 +1,25 @@
+# Ignore OS related files
+.DS_Store
+Thumbs.db
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+Gemfile.lock
+/vendor/bundle
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# JetBrains IDEs
+.idea/
+
+# Environment variables
+.env
+
+# List of exclusions
+exclusions.txt
