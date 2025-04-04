@@ -6,7 +6,9 @@ module Processors
       Utils::Log.logger.info("Loading exclusions from #{file}...")
       exclusions = []
       if File.exist?(file)
-        exclusions = File.read(file).split("\n").map(&:strip).reject(&:empty?)
+        exclusions = File.read(file).split("\n")
+                         .map { |line| line.split('#').first.strip }.reject(&:empty?)
+
         Utils::Log.logger.info("Loaded #{exclusions.size} exclusions.")
       else
         Utils::Log.logger.warn('Exclusions file not found. Proceeding without exclusions.')
