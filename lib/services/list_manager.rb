@@ -5,7 +5,13 @@ module Services
   class ListManager
     def self.fetch_existing_lists
       Utils::Log.logger.info('Retrieving existing lists...')
-      API::CloudflareAPI.api_call(:get, "https://api.cloudflare.com/client/v4/accounts/#{CLOUDFLARE_ACCOUNT_ID}/gateway/lists")
+      result = API::CloudflareAPI.api_call(:get, "https://api.cloudflare.com/client/v4/accounts/#{CLOUDFLARE_ACCOUNT_ID}/gateway/lists")
+      if result.nil?
+        Utils::Log.logger.warn('API returned nil for lists, using empty array')
+        return []
+      end
+      Utils::Log.logger.debug("Retrieved #{result.size} existing lists")
+      result
     end
 
     def self.create_list(name, description, domains)
