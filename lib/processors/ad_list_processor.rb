@@ -5,9 +5,19 @@ require_relative '../utils/logger'
 
 module Processors
   class AdListProcessor
+    # Regex to match valid IPv4 addresses (to reject them as hostnames)
+    IPV4_REGEX = /\A(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\z/.freeze
+
+    # Regex to match invalid IP-like patterns (e.g., 103.103.69.97.12)
+    INVALID_IP_LIKE_REGEX = /\A(?:\d+\.){4,}\d+\z/.freeze
+
+    # Improved hostname regex that ensures proper domain structure
     HOSTNAME_REGEX = /\A
       (?=.{1,253}\z) # Overall length up to 253 chars
-      [a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])? # One hostname label
+      (?!.*\.\.) # No consecutive dots
+      (?![.-]) # Cannot start with dot or hyphen
+      (?!.*[.-]\z) # Cannot end with dot or hyphen
+      [a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])? # First label
       (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)* # Additional labels
     \z/x.freeze
 
@@ -28,6 +38,17 @@ module Processors
     end
 
     def self.valid_hostname?(hostname)
+      # Reject valid IPv4 addresses (they're not hostnames)
+      return false if hostname.match?(IPV4_REGEX)
+
+      # Reject invalid IP-like patterns (e.g., 103.103.69.97.12)
+      return false if hostname.match?(INVALID_IP_LIKE_REGEX)
+
+      # Reject hostnames that are all numeric labels (likely malformed IPs)
+      labels = hostname.split('.')
+      return false if labels.length > 1 && labels.all? { |label| label.match?(/\A\d+\z/) }
+
+      # Check against the hostname regex
       hostname.match?(HOSTNAME_REGEX)
     end
 
