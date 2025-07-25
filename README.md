@@ -9,10 +9,11 @@ Tired of annoying ads slowing down your browsing? This script uses Cloudflare Ze
 1. [Overview](#overview)
 2. [Why Use This?](#why-use-this)
 3. [How Does It Work?](#how-does-it-work)
-4. [Disclaimer](#disclaimer)
-5. [Getting Started](#getting-started)
-6. [Using the Script](#using-the-script)
-7. [Troubleshooting](#troubleshooting)
+4. [Hostname Validation](#hostname-validation)
+5. [Disclaimer](#disclaimer)
+6. [Getting Started](#getting-started)
+7. [Using the Script](#using-the-script)
+8. [Troubleshooting](#troubleshooting)
 
 ## Overview
 This project helps you block ads at the DNS level using Cloudflare’s Zero Trust platform. Ads can slow down websites, waste bandwidth, and compromise your privacy. By blocking them at the DNS level, you speed up browsing and maintain privacy across all devices, without needing to install Pi-hole or other software.
@@ -47,6 +48,22 @@ Here’s the basic flow:
 6. From now on, any device connected to Cloudflare’s Zero Trust DNS will automatically block the ads before they even have a chance to load.
 
 This approach provides a robust and network-wide solution for blocking ads, making it a great alternative to something like Pi-hole, especially for people who want an easy-to-manage, cloud-based solution that doesn’t require setting up dedicated hardware.
+
+## Hostname Validation
+
+This script validates hostnames according to the [RFC 1123](https://tools.ietf.org/html/rfc1123) standard (a subset of the standard). All invalid hostnames are automatically rejected and will not be included in the blocking lists sent to Cloudflare.
+
+**Validation Rules:**
+- Hostnames must contain only ASCII letters (a-z, A-Z), digits (0-9), and hyphens (-)
+- Each label must be 1-63 characters long
+- Total hostname length cannot exceed 253 characters
+- Labels cannot start or end with hyphens
+- No consecutive dots are allowed
+
+**Important Notes:**
+- **IP addresses are not supported** - Both valid IP addresses (e.g., `192.168.1.1`) and malformed IP-like patterns (e.g., `103.103.69.97.12`) are rejected
+- Invalid hostnames are logged as warnings but do not stop script execution
+- This validation helps prevent API errors when uploading lists to Cloudflare
 
 ## Disclaimer
 This script uses a large ad-blocking list, which may block more domains than expected, potentially breaking some sites. Use the exclusions list to whitelist necessary domains.
